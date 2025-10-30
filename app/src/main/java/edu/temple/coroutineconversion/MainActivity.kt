@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import java.util.Locale
-import kotlinx.coroutines.*  // Added for coroutines
+import kotlinx.coroutines.*  // for coroutines
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,12 +26,17 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.revealButton).setOnClickListener {
 
-            // ✅ Coroutine replaces Thread + Handler
-            CoroutineScope(Dispatchers.Main).launch {
+            // ✅ Coroutine replaces Thread + Handler, uses withContext for UI updates
+            CoroutineScope(Dispatchers.Default).launch {
                 repeat(100) {
-                    currentTextView.text =
-                        String.format(Locale.getDefault(), "Current opacity: %d", it)
-                    cakeImageView.alpha = it / 100f
+                    withContext(Dispatchers.Main) {
+                        currentTextView.text = String.format(
+                            Locale.getDefault(),
+                            "Current opacity: %d",
+                            it
+                        )
+                        cakeImageView.alpha = it / 100f
+                    }
                     delay(40)
                 }
             }
